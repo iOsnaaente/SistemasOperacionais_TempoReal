@@ -1,0 +1,5 @@
+https://docs.python.org/3/library/socketserver.html
+https://www.youtube.com/watch?v=aOtowE_XYDw&ab_channel=Ignor%C3%A2nciaZero
+https://www.youtube.com/watch?v=UfcBDlgzAnc&ab_channel=TeiadoConhecimento
+https://www.youtube.com/watch?v=n1M73hUnbaU&ab_channel=Meguinha
+https://www.youtube.com/watch?v=Iu8_IpztiOU&ab_channel=buildwithpython
