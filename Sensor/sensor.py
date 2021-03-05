@@ -76,8 +76,8 @@ def send_to_server( time_to_send = 1 ):
 
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
-func_reader = Thread( target = read_serial, args = 1/2, name = "Serial_Reader"  )
-func_sender = Thread( target = send_to_server, args = 1/2, name = "TCP_sender" )
+func_reader = Thread( target = read_serial, args = ( 1/2 , ), name = "Serial_Reader"  )
+func_sender = Thread( target = send_to_server, args = ( 1/2 , ), name = "TCP_sender" )
 
 # INICIA AS THREADS FUNCTIONS 
 func_reader.start()
