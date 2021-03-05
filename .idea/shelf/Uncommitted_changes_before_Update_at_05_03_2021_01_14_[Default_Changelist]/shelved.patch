@@ -1,0 +1,116 @@
+Index: 3 - Sockets TCP/servidor cliente python/cliente2.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/3 - Sockets TCP/servidor cliente python/cliente2.py b/3 - Sockets TCP/servidor cliente python/AtuadorClient.py
+rename from 3 - Sockets TCP/servidor cliente python/cliente2.py
+rename to 3 - Sockets TCP/servidor cliente python/AtuadorClient.py
+--- a/3 - Sockets TCP/servidor cliente python/cliente2.py	(revision 52f5a3e9a2e063ea8341b978b209f726ad01e6d1)
++++ b/3 - Sockets TCP/servidor cliente python/AtuadorClient.py	(date 1614912969345)
+@@ -1,3 +1,4 @@
++#cliente Atuador
+ from socket import *
+ 
+ host = gethostname()                    # endereço do host
+@@ -5,9 +6,12 @@
+ 
+ client = socket(AF_INET, SOCK_STREAM)
+ client.connect((host, port))
++esp = "A "
+ 
+ while 1:
++    msg = ""
+     msg = input("Digite:")
+-    client.send(msg.encode())          # envia mensagem p/servidor
+-    response = client.recv(4096)       # resposta que o servidor fornece
++    msg = esp + msg
++    client.send(msg.encode())  # envia mensagem p/servidor
++    response = client.recv(4096)  # resposta que o servidor fornece
+     print(response)
+\ No newline at end of file
+Index: 3 - Sockets TCP/servidor cliente python/server.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from socket import *\r\nimport socketserver, time\r\nimport Threads2\r\nimport threading\r\n\r\nhost = gethostname()\r\nport = 555\r\n\r\ndef agora():\r\n    return time.ctime(time.time())\r\n\r\nclass LidarcomCliente(socketserver.BaseRequestHandler):                  # Classe para lidar com a conexao dos clientes\r\n    def handle(self):\r\n        print(self.client_address, agora())\r\n\r\n        while True:                                                      # Laço de execução do Servidor\r\n            infodata = self.request.recv(1024)                           # informação que recebeu do cliente\r\n            print(self.client_address, infodata)                         # Qual cliente enviou a mensagem e a mensagem\r\n            if not infodata: break\r\n            resposta = '%s as %s' % (infodata, agora())                  # cria uma resposta p/ enviar\r\n            self.request.send(resposta.encode())                         # envia p/ cliente uma resposta qualquer\r\n        self.request.close()\r\nender = (host,port)\r\nserver = socketserver.ThreadingTCPServer(ender, LidarcomCliente)         # Cria servidor\r\nserver.serve_forever()                                                   # P/ sempre executar\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/3 - Sockets TCP/servidor cliente python/server.py b/3 - Sockets TCP/servidor cliente python/server.py
+--- a/3 - Sockets TCP/servidor cliente python/server.py	(revision 52f5a3e9a2e063ea8341b978b209f726ad01e6d1)
++++ b/3 - Sockets TCP/servidor cliente python/server.py	(date 1614917572757)
+@@ -9,17 +9,23 @@
+ def agora():
+     return time.ctime(time.time())
+ 
+-class LidarcomCliente(socketserver.BaseRequestHandler):                  # Classe para lidar com a conexao dos clientes
++class LidarcomCliente(socketserver.BaseRequestHandler):                                                   # Classe para lidar com a conexao dos clientes
+     def handle(self):
+         print(self.client_address, agora())
++        def selecao(strinfodata):
++            if strinfodata[0:1] == "A":
++                return "Atuador"
++            elif strinfodata[0:1] == "S":
++                return "Sensor"
+ 
+-        while True:                                                      # Laço de execução do Servidor
+-            infodata = self.request.recv(1024)                           # informação que recebeu do cliente
+-            print(self.client_address, infodata)                         # Qual cliente enviou a mensagem e a mensagem
++        while True:                                                                                       # Laço de execução do Servidor
++            infodata = self.request.recv(1024)                                                            # informação que recebeu do cliente
++            strinfodata = infodata.decode("utf-8")                                                        # Passar para String
++            print(self.client_address, strinfodata)                                                       # Qual cliente enviou a mensagem e a mensagem
+             if not infodata: break
+-            resposta = '%s as %s' % (infodata, agora())                  # cria uma resposta p/ enviar
+-            self.request.send(resposta.encode())                         # envia p/ cliente uma resposta qualquer
++            resposta = '%s,msg: %s, DataHora: %s' % (selecao(strinfodata),strinfodata, agora())           # cria uma resposta p/ enviar
++            self.request.send(resposta.encode())                                                          # envia p/ cliente uma resposta qualquer
+         self.request.close()
+ ender = (host,port)
+-server = socketserver.ThreadingTCPServer(ender, LidarcomCliente)         # Cria servidor
+-server.serve_forever()                                                   # P/ sempre executar
++server = socketserver.ThreadingTCPServer(ender, LidarcomCliente)                                          # Cria servidor
++server.serve_forever()                                                                                    # P/ sempre executar
+Index: 3 - Sockets TCP/servidor cliente python/cliente.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/3 - Sockets TCP/servidor cliente python/cliente.py b/3 - Sockets TCP/servidor cliente python/SensorClient.py
+rename from 3 - Sockets TCP/servidor cliente python/cliente.py
+rename to 3 - Sockets TCP/servidor cliente python/SensorClient.py
+--- a/3 - Sockets TCP/servidor cliente python/cliente.py	(revision 52f5a3e9a2e063ea8341b978b209f726ad01e6d1)
++++ b/3 - Sockets TCP/servidor cliente python/SensorClient.py	(date 1614912969290)
+@@ -1,3 +1,6 @@
++#cliente sensor
++#fazer um timer com o limite maximo p/resposta sei la 10s ?
++
+ from socket import *
+ 
+ host = gethostname()                    # endereço do host
+@@ -5,9 +8,12 @@
+ 
+ client = socket(AF_INET, SOCK_STREAM)
+ client.connect((host, port))
++esp = "S "
+ 
+ while 1:
++    msg = ""
+     msg = input("Digite:")
++    msg = esp+msg
+     client.send(msg.encode())          # envia mensagem p/servidor
+     response = client.recv(4096)       # resposta que o servidor fornece
+     print(response)
+\ No newline at end of file
+Index: 3 - Sockets TCP/servidor cliente python/ref.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/3 - Sockets TCP/servidor cliente python/ref.txt b/3 - Sockets TCP/servidor cliente python/ref.txt
+new file mode 100644
+--- /dev/null	(date 1614914000595)
++++ b/3 - Sockets TCP/servidor cliente python/ref.txt	(date 1614914000595)
+@@ -0,0 +1,2 @@
++https://docs.python.org/3.9/library/socketserver.html#socketserver.ThreadingTCPServer
++https://www.youtube.com/watch?v=aOtowE_XYDw&ab_channel=Ignor%C3%A2nciaZero
