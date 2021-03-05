@@ -48,7 +48,7 @@ class Serial_SR ( Serial ):
                 self.init_SerialPort( self.comport, self.baudrate, self.timeout )
                 print("Comport ", self.comport.port , " conectada!!")
             except:
-                print("Não foi possível conectar na comport : ", self.comport.port )
+                print("Não foi possível conectar na comport : ", comport )
 
 
     """ Seta a porta serial conectada 
