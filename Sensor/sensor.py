@@ -8,15 +8,14 @@ import sys
 import os 
 
 # MACRO-DEFINIÇÕES 
-COMPORT = 'COM5'
+COMPORT = 'COM3'
 HOST    = 'localhost'
 PORT    = 1205
 
 PERIOD = 500                                    # Periodo do ciclo 
-NAME = 'Sensor'.encode()                        # Nome do serviço 
+NAME = 'Sensor'                                 # Nome do serviço 
 
 TERMINAL_SIZE = os.get_terminal_size().lines    # "Limpar" a tela com '\n' 
-
 
 # INSTANCIAMENTO DA CLASSE CLIENTE 
 print("Iniciando a conexão cliente/servidor...")
@@ -33,7 +32,7 @@ while not cliente.isAlive:
         sys.exit(1)                      # ENCERRA COM ERRO 
 
 # AVISA O SERVIDOR QUEM É 
-cliente.send_message( NAME )
+cliente.send_message( NAME.encode() )
 
 
 # INSTANCIAMENTO DA CLASSE SERIAL READER 
@@ -61,18 +60,18 @@ def read_serial( time_to_read = 1 ):
         lines = comport.serial_receive()     
         for line in  lines:
             var_available = False            
-            to_send = line.decode()         
-            print( to_send )
+            to_send = line.decode()
+            to_send = to_send.replace('\n', '').replace('\r','').encode()
             var_available = True 
 
-def send_to_server( time_to_send = 1 ):
+def send_to_server( time_to_send = 1/2 ):
     global var_global_control
     global var_available
     global to_send
 
     while var_global_control: 
         time.sleep( time_to_send )
-        cliente.send_message( var_available )
+        cliente.send_message( to_send )
 
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
