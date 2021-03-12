@@ -60,10 +60,14 @@ class Client_TCP:
             msg = self.tcp.recvfrom( self.BUFF ) 
             if show_msg:
                 print( "Receive : ", msg )
+            return msg 
                 
         except socket.timeout as err :
-            print( "Receive ", err )
+            if show_msg:
+                print( "Receive ", err )
+            return None 
 
+            
     """ setar o tamanho máximo do buffer.
     """
     def set_buffer(self, buff):
@@ -80,6 +84,3 @@ class Client_TCP:
     """
     def close_connection(self):
         self.tcp.close()
-
-
-

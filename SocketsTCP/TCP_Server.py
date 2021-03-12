@@ -1,14 +1,20 @@
+from threading import Thread, Lock 
 import socket
+import time 
 
-class Client_TCP:
+class Server_TCP:
 
     HOST    = '127.0.0.1'     # IP address 
     PORT    = 5000            # Port where the server is connected
     TIMEOUT = 1               # Timeout in seconds 
-    BUFF    = 1024            # Buffer to receive n bytes 
+    BUFF    = 1024            # Buffer to receive n bytes
 
-    def __init__(self, HOST, IP, timeout = 0 ):
+    tcp = 0 
+    server_addr = 0 
+    connection = True 
 
+    def __init__(self, HOST, IP, timeout = 0):
+        
         self.HOST     = HOST
         self.IP       = IP  
         self.TIMEOUT  = timeout
@@ -21,42 +27,49 @@ class Client_TCP:
             self.tcp.settimeout( self.TIMEOUT ) # Timeout garante que a conexão irá durar esse tempo
 
         self.server_addr = (HOST, IP)           # Cria a tupla addr do server
-        self.connect_server()                   # Chama o método de conexão do servidor
 
+        self.tcp.bind( self.server_addr )       # Inicia o servidor 
+        self.tcp.listen( 2 )                    # Backlog de conexões simultaneas 
 
-    """ Para se conectar em um servidor                                                  
-    """
-    def connect_server ( self ):
+        self.clients = []                       # Lista de clientes conectados
+    
+    # Método para conectar novos clientes 
+    def connect_client ( self ):
         try: 
-            # Conecta no servidor no host e ip passados
-            self.tcp.connect( self.server_addr )
-            print("Conectado com ", self.server_addr )
+            client_conn, client_addr = self.tcp.accept()
+            # Todo novo cliente vai para a lista de novos clientes conectados 
+            self.clients.append( (client_conn, client_addr) )
         except:
-            print("Falha para conectar no servidor : ", self.server_addr, " Chame novamente o método connect_server mais tarde" ) 
+            pass  
+        
+    # Retorna a lista de clientes conectados. 
+    def get_clients_connected(self):
+        return self.clients
 
 
     """ Para mandar uma mensagem TCP usar o método abaixo.
         Padrão usar mensagens str.encode() ou str. 
     """
-    def send_message( self, msg ):
-        # Garante que a mensagem esteja codificada
-        if type(msg) is str:
-            msg = msg.encode()
-        elif type(msg) is not bytes:
-            print("Dados fora do padrão de envio TCP != str or bytes")
+    def send_message( self, msg, client ):
+        with client : 
+            # Garante que a mensagem esteja codificada
+            if type(msg) is str:
+                msg = msg.encode()
+            elif type(msg) is not bytes:
+                print("Dados fora do padrão de envio TCP != str or bytes")
 
-        self.tcp.sendto( msg, self.server_addr )
+            self.tcp.send( msg )
 
 
     """ Método para receber uma mensagem.
         Lembrar do timeout (segundos).
     """
-    def receive_message(self, show_msg ):
+    def receive_message(self, client, show_msg = False ):
         try:
-            msg = self.tcp.recvfrom( self.BUFF ) 
+            msg = client.recvfrom( self.BUFF )
             if show_msg:
                 print( "Receive : ", msg )
-                
+
         except socket.timeout as err :
             print( "Receive ", err )
 

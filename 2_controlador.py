@@ -56,9 +56,8 @@ def new_connections( server ):
 
 
 print("Iniciando escuta do servidor em busca de novas conexões...", end='\n')
-server_thr = Thread( target = new_connections, args = (server,), name = "Que procura novas conexões" )
+server_thr = Thread( target = new_connections, args = (server, ), name = "Que procura novas conexões" )
 server_thr.start()
-
 
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão....")
@@ -95,7 +94,7 @@ def controller_communication(data, show_msg = False ):
     while not var_exit:
         if received_data: 
             print("Manipulando os dados do sensor...")
-            data_controll = signal_manipulation(data)
+            data_controll = signal_manipulation( data )
             received_data = False 
             read_to_send = True
 

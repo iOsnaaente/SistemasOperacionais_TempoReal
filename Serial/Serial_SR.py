@@ -1,6 +1,7 @@
 from serial import Serial, SerialException
-from sys import platform
-from glob import glob
+import serial
+import sys 
+import glob 
 
 """
     A classe funciona tanto em Windows quanto em Linux 
@@ -23,7 +24,7 @@ class Serial_SR ( Serial ):
     timeout = 0 
 
     def __init__(self, comport = 0, baudrate = 9600, timeout = 1):
-        super().__init__(self)
+        super().__init__()
 
         self.comport  = comport 
         self.baudrate = baudrate
@@ -31,22 +32,23 @@ class Serial_SR ( Serial ):
 
         if not comport:
             comports = self.get_SerialPorts()
-            for comport_ in comports:
-                self.comport = comport_
-                print("Tentando conectar na Comport : ", comport_ )
+            for port in comports:
+                self.comport = port
+                print("Tentando conectar na Comport : ", port )
                 try: 
-                    self.init_SerialPort(comport_, self.baudrate, self.timeout)
-                    print("Comport : ", comport_ , " conectada!!")
+                    self.init_SerialPort( port, self.baudrate, self.timeout)
+                    print("Comport : ", port , " conectada!!")
                     break
                 except:
-                    pass
+                    pass 
             if not self.comport:
                 print("Não foram encontradas Portas seriais válidas, verifique a conexão e tente novamente")
         else:
             try:
                 self.init_SerialPort( self.comport, self.baudrate, self.timeout )
+                print("Comport ", self.comport.port , " conectada!!")
             except:
-                print("Não foi possível conectar na comport : ", self.comport )
+                print("Não foi possível conectar na comport : ", comport )
 
 
     """ Seta a porta serial conectada 
@@ -54,11 +56,7 @@ class Serial_SR ( Serial ):
     def set_port(self, comport):
         try:
             self.init_SerialPort(comport, self.baudrate, self.timeout)
-            try: 
-                self.close()
-            except:
-                pass
-            self.comport = comport
+            self.close()
         except:
             print("Não foi possível conectar na comport : ", self.comport )
             print("Ainda conectado em : ", self.comport )
@@ -69,12 +67,12 @@ class Serial_SR ( Serial ):
     def get_SerialPorts(self, limit = 10 ):
 
         # Abre se o SO for Windows
-        if platform.startswith('win'):  
+        if sys.platform.startswith('win'):  
             ports = ['COM%s' % (i + 1) for i in range( limit )]
         
         # Abre se o SO for Linux
-        elif platform.startswith('linux') or platform.startswith('cygwin'):
-            ports = glob('/dev/tty[A-Za-z]*')
+        elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+            ports = glob.glob('/dev/tty[A-Za-z]*')
         
         # Caso não seja nenhum dos dois, ele não suporta
         else:
@@ -87,7 +85,7 @@ class Serial_SR ( Serial ):
                 s = Serial(port)
                 s.close()
                 portList.append(port)
-            except (OSError, SerialException):
+            except (OSError, serial.SerialException):
                 pass
 
         return portList
@@ -106,18 +104,23 @@ class Serial_SR ( Serial ):
 
     """ Inicia a conexão serial 
     """
-    def init_SerialPort(self, DEVICE = self.comport, BAUDRATE = self.baudrate, TIMEOUT = self.timeout):
+    def init_SerialPort(self, DEVICE = 0, BAUDRATE = 0, TIMEOUT = 0):
         # Inicia a conexao serial
         #comport = serial.Serial('/dev/ttyUSB4', 9600, timeout=1)
-        self.comport = Serial(DEVICE, BAUDRATE, TIMEOUT)
-        return comport
+        if not DEVICE:
+            DEVICE = self.comport
+        if not BAUDRATE:
+            BAUDRATE = self.baudrate
+        if not TIMEOUT:
+            TIMEOUT = self.timeout
+
+        self.comport = Serial( DEVICE, BAUDRATE, timeout = TIMEOUT)
     
     
     """ Retorna a leitura da porta serial
     """
-    def serial_receive(self ):
-        return self.comport.read()
-
+    def serial_receive(self, num_lines = 1 ):
+        return self.comport.readlines( num_lines )
 
     """ Envia uma mensagem literal para a porta serial
     """
