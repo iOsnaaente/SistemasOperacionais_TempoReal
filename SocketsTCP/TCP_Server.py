@@ -13,7 +13,7 @@ class Server_TCP:
     server_addr = 0 
     connection = True 
 
-    def __init__(self, HOST, IP, timeout = 0):
+    def __init__(self, HOST, IP, timeout = 0, num_listening = 1):
         
         self.HOST     = HOST
         self.IP       = IP  
@@ -29,19 +29,22 @@ class Server_TCP:
         self.server_addr = (HOST, IP)           # Cria a tupla addr do server
 
         self.tcp.bind( self.server_addr )       # Inicia o servidor 
-        self.tcp.listen( 2 )                    # Backlog de conexões simultaneas 
+        self.tcp.listen( num_listening )        # Backlog de conexões simultaneas 
 
         self.clients = []                       # Lista de clientes conectados
     
+
     # Método para conectar novos clientes 
     def connect_client ( self ):
         try: 
             client_conn, client_addr = self.tcp.accept()
             # Todo novo cliente vai para a lista de novos clientes conectados 
             self.clients.append( (client_conn, client_addr) )
+            return self.clients[-1]
         except:
-            pass  
+            return None   
         
+
     # Retorna a lista de clientes conectados. 
     def get_clients_connected(self):
         return self.clients
@@ -69,15 +72,19 @@ class Server_TCP:
             msg = client.recvfrom( self.BUFF )
             if show_msg:
                 print( "Receive : ", msg )
+            return msg
 
         except socket.timeout as err :
-            print( "Receive ", err )
+            if show_msg:
+                print( "Receive ", err )
+            return None 
 
 
     """ setar o tamanho máximo do buffer.
     """
     def set_buffer(self, buff):
         self.BUFF = buff 
+
 
     """
         Setar o timeout da conexão.
@@ -86,10 +93,8 @@ class Server_TCP:
         self.TIMEOUT = timeout
         self.tcp.settimeout( self.TIMEOUT )
 
+
     """ Encerrar a conexão TCP.
     """
     def close_connection(self):
         self.tcp.close()
-
-
-
