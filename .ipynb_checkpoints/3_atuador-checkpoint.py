@@ -26,7 +26,7 @@ tries = 0
 while not cliente.isAlive:
     time.sleep(1)
     cliente.connect_server() 
-    tries += 1
+    tries += 1 
     if tries > 5:
         print("Servidor indisponível, encerrando processo")
         sys.exit(1)                      # ENCERRA COM ERRO
@@ -55,7 +55,6 @@ def receive_from_server(time_to_send = 1/2):
 
     while var_global_control:
         time.sleep(time_to_send)
-        cliente.send_message(NAME)
         serial_msg = cliente.receive_message().decode()
         
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
@@ -65,8 +64,7 @@ def write_serial(time_to_read = 1/2):
     global var_available
     global serial_msg
 
-    while var_global_control:
-        comport.serial_send(serial_msg)
+    comport.serial_send(serial_msg)
     
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_reader = Thread(target = receive_from_server, args = ( 1/2 , ), name = "TCP_Reader")

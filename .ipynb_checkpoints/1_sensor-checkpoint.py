@@ -53,21 +53,19 @@ to_send            = 0       # Variavel global dos dados
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
-    
     global var_global_control
     global to_send 
 
     while var_global_control: 
         time.sleep( time_to_read )
         lines = comport.serial_receive()     
-        for line in  lines:
+        for line in  lines:           
             data = line.decode()
             data = data.replace('\n', '').replace('\r','')
             to_send = pack('cf', NAME, data )
 
 
 def send_to_server( time_to_send = 1/2 ):
-    
     global var_global_control
     global to_send
 
