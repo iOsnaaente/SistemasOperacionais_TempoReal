@@ -13,8 +13,8 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = 'localhost'
-PORT    = 1205
+HOST    = "25.114.157.253"
+PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
 NAME    = b'S'                                  # Nome do serviço 
@@ -49,7 +49,7 @@ os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do promp
 
 
 var_global_control = True    # Avisa o fim do código 
-to_send            = 0       # Variavel global dos dados 
+to_send            = b"0"       # Variavel global dos dados
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
@@ -59,10 +59,13 @@ def read_serial( time_to_read = 1 ):
     while var_global_control: 
         time.sleep( time_to_read )
         lines = comport.serial_receive()     
-        for line in  lines:           
-            data = line.decode()
-            data = data.replace('\n', '').replace('\r','')
-            to_send = pack('cf', NAME, data )
+        for line in  lines:
+            try:
+                data = line.decode()
+                data = data.replace('\n', '').replace('\r','')
+                #to_send = pack('cf', NAME, data )
+                to_send = data.encode()
+            except: pass
 
 
 def send_to_server( time_to_send = 1/2 ):
