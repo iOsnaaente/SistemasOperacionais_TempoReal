@@ -1,6 +1,6 @@
 from socket import *
 
-host = gethostname()                    # endereço do host
+host = 'http://25.94.9.254'  #http://25.94.218.230:555                    # endereço do host
 port = 555                              # porta p/coneção
 
 client = socket ( AF_INET, SOCK_STREAM )

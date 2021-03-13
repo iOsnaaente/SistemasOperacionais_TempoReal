@@ -5,7 +5,7 @@ from threading import Thread
 import Threads2
 import threading
 
-host = gethostname()
+host = 'http://25.94.9.254'  #http://25.94.218.230:555
 port = 555
 LIST = []
 
@@ -60,5 +60,5 @@ class LidarcomCliente( socketserver.BaseRequestHandler ):                       
         self.request.close()
 
 ender = (host,port)
-server = socketserver.ThreadingTCPServer( ender, LidarcomCliente)                                         # Cria servidor
+server = socketserver.ThreadingTCPServer(ender, LidarcomCliente)                                         # Cria servidor
 server.serve_forever()                                                                                    # P/ sempre executar
