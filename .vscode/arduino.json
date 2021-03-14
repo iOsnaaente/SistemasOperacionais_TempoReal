@@ -1,0 +1,6 @@
+{
+    "port": "COM3",
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328old",
+    "sketch": "1_Arduino\\1 - sensor\\1 - sensor.ino"
+}

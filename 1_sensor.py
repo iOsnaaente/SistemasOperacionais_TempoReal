@@ -13,12 +13,11 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = 'localhost'
-PORT    = 1205
+HOST    = '25.8.200.93'
+PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
 NAME    = b'S'                                  # Nome do serviço 
-
 
 # INSTANCIAMENTO DA CLASSE CLIENTE 
 print("Iniciando a conexão cliente/servidor...")
@@ -62,7 +61,8 @@ def read_serial( time_to_read = 1 ):
         for line in  lines:           
             data = line.decode()
             data = data.replace('\n', '').replace('\r','')
-            to_send = pack('cf', NAME, data )
+            #to_send = pack('cf', NAME, data )
+            to_send = data.encode() 
 
 
 def send_to_server( time_to_send = 1/2 ):
@@ -81,6 +81,7 @@ func_sender = Thread( target = send_to_server, args = ( 1/2 , ), name = "TCP_sen
 # INICIA AS THREADS FUNCTIONS 
 func_reader.start()
 func_sender.start()
+
 
 time.sleep(3600000) # 60 minutos e encerra o programa 
 var_global_control = False
