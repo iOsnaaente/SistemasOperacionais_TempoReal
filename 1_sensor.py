@@ -13,7 +13,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.8.200.93'
+HOST    = '25.114.157.253'
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
@@ -44,35 +44,45 @@ comport = Serial_SR( COMPORT )
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 print("Conexões Serial estabelecida....")
 input("Pressione ENTER para iniciar a transmissão....")
-os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do prompt
+#os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do prompt
 
 
 var_global_control = True    # Avisa o fim do código 
+msg_ready          = False   # Mutex improvisado 
 to_send            = 0       # Variavel global dos dados 
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
     global var_global_control
+    global msg_ready 
     global to_send 
 
     while var_global_control: 
-        time.sleep( time_to_read )
+        #time.sleep( time_to_read )
         lines = comport.serial_receive()     
         for line in  lines:           
-            data = line.decode()
-            data = data.replace('\n', '').replace('\r','')
-            #to_send = pack('cf', NAME, data )
-            to_send = data.encode() 
+            data = str( line.decode() ).split(' ')[:-1]
+            data = [ int(n) for n in data ]
+            to_send = NAME + bytes(data) 
+            print('Dados prontos para enviar : ', to_send )
+            msg_ready = True 
 
 
 def send_to_server( time_to_send = 1/2 ):
     global var_global_control
+    global msg_ready
     global to_send
 
     while var_global_control: 
-        time.sleep( time_to_send )
-        cliente.send_message( to_send )
+        #time.sleep( time_to_send )
+        if msg_ready:
+            cliente.send_message( to_send )
+            print('Enviando : ', to_send )
+            msg_ready = False 
 
+
+# LIMPA O BUFFER DA SERIAL 
+comport.serial_clear_input()
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_reader = Thread( target = read_serial, args = ( 1/2 , ), name = "Serial_Reader"  )

@@ -13,11 +13,23 @@ import time
 
 time.sleep(2)
 
-lines = comport.serial_receive()     
-for line in  lines:           
-    data = line.decode()
-    data = data.replace('\n', '').replace('\r','').encode()
-    to_send = pack('cf', NAME, 3.14157 )
-    print(type(to_send), to_send )
-    caracter, valor = unpack('cf', to_send)
-    print( caracter, valor )
+lines = comport.serial_receive() 
+
+from struct import pack, unpack 
+
+for line in  lines:   
+
+    data = str( line.decode() ).split(' ')
+    data = data[:-1]
+    data = [ int(n) for n in data ]
+    
+    print(data)
+
+
+    valor = bytes(data)
+    teste = int.from_bytes( valor, byteorder='little')
+
+
+
+
+    print(teste)
