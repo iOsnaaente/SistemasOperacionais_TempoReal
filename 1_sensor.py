@@ -1,44 +1,42 @@
 #!/usr/bin/env python3
-from socket import *
+
 from SocketsTCP.TCP_Client import Client_TCP    # Importa o módulo TCP
-from Serial.Serial_SR import Serial_SR          # Importa o módulo Serial 
+from Serial.Serial_SR import Serial_SR          # Importa o módulo Serial
 
 from threading import Thread                    # Importa as Threads
 from struct import pack                         # Usado para codificar as mensagens em bytes
 
 import time
-import sys 
-import os 
+import sys
+import os
 
 
-# MACRO-DEFINIÇÕES 
+# MACRO-DEFINIÇÕES
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-#HOST    = "25.114.157.253"
-HOST     = gethostname()
+HOST    = '25.114.157.253'
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
-NAME    = b'S'                                  # Nome do serviço 
+NAME    = b'S'                                  # Nome do serviço
 
-
-# INSTANCIAMENTO DA CLASSE CLIENTE 
+# INSTANCIAMENTO DA CLASSE CLIENTE
 print("Iniciando a conexão cliente/servidor...")
 cliente = Client_TCP( HOST, PORT, timeout = 1 )
 
 # SE O CLIENTE NÃO ESTIVER CONECTADO, TENTE CONECTAR ATÉ CONSEGUIR
-tries = 0  
+tries = 0
 while not cliente.isAlive:
     time.sleep(1)
-    cliente.connect_server() 
-    tries += 1 
+    cliente.connect_server()
+    tries += 1
     if tries > 5:
         print("Servidor indisponível, encerrando processo")
-        # ENCERRA COM ERRO 
-        sys.exit(1)                      
+        # ENCERRA COM ERRO
+        sys.exit(1)
 print("Conexão cliente/servidor estabelecida...")
 
 
-# INSTANCIAMENTO DA CLASSE SERIAL READER 
+# INSTANCIAMENTO DA CLASSE SERIAL READER
 print("Iniciando a conexão Serial na comport %s ..." %( COMPORT if COMPORT else 'defalt') )
 comport = Serial_SR( COMPORT )
 
@@ -49,42 +47,51 @@ input("Pressione ENTER para iniciar a transmissão....")
 os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do prompt
 
 
-var_global_control = True    # Avisa o fim do código 
-to_send            = b"0"       # Variavel global dos dados
+var_global_control = True    # Avisa o fim do código
+msg_ready          = False   # Mutex improvisado
+to_send            = 0       # Variavel global dos dados
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
     global var_global_control
-    global to_send 
+    global msg_ready
+    global to_send
 
-    while var_global_control: 
-        time.sleep( time_to_read )
-        lines = comport.serial_receive()     
+    while var_global_control:
+        #time.sleep( time_to_read )
+        lines = comport.serial_receive()
         for line in  lines:
-            try:
-                data = line.decode()
-                data = data.replace('\n', '').replace('\r','')
-                #to_send = pack('cf', NAME, data )
-                to_send = data.encode()
-            except: pass
+            data = str( line.decode() ).split(' ')[:-1]
+            data = [ int(n) for n in data ]
+            to_send = NAME + bytes(data)
+            print('Dados prontos para enviar : ', to_send )
+            msg_ready = True
 
 
 def send_to_server( time_to_send = 1/2 ):
     global var_global_control
+    global msg_ready
     global to_send
 
-    while var_global_control: 
-        time.sleep( time_to_send )
-        cliente.send_message( to_send )
+    while var_global_control:
+        #time.sleep( time_to_send )
+        if msg_ready:
+            cliente.send_message( to_send )
+            print('Dados : ', to_send, " sendo enviados....")
+            msg_ready = False
 
+
+# LIMPA O BUFFER DA SERIAL
+comport.serial_clear_input()
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_reader = Thread( target = read_serial, args = ( 1/2 , ), name = "Serial_Reader"  )
 func_sender = Thread( target = send_to_server, args = ( 1/2 , ), name = "TCP_sender" )
 
-# INICIA AS THREADS FUNCTIONS 
+# INICIA AS THREADS FUNCTIONS
 func_reader.start()
 func_sender.start()
+
 
 time.sleep(3600000) # 60 minutos e encerra o programa 
 var_global_control = False
