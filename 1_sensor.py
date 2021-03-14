@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from socket import *
 from SocketsTCP.TCP_Client import Client_TCP    # Importa o módulo TCP
 from Serial.Serial_SR import Serial_SR          # Importa o módulo Serial 
 
@@ -13,7 +13,8 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = "25.114.157.253"
+#HOST    = "25.114.157.253"
+HOST     = gethostname()
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms

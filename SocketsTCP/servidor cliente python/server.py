@@ -5,10 +5,10 @@ from threading import Thread
 import Threads2
 import threading
 
-host = "25.114.157.253"
+#host = 'http://25.94.9.254'  #http://25.94.218.230:555
+host = gethostname()
 port = 555
 LIST = []
-msg1 = "sem dados"
 
 class Thatuador(Thread):
     def __init__(self, info):
@@ -17,16 +17,15 @@ class Thatuador(Thread):
 
 
     def run(self):
-
         while LIST:
-            msg = ""
             for msg in LIST:
                 #print(LIST)
                 self.info.request.send(msg.encode())
                 #info.remove(msg)
                 LIST.remove(msg)
         #print("nao entrou")
-        self.info.request.send(msg1.encode())
+        msg = "sem dados"
+        self.info.request.send(msg.encode())
 class Thsensor(Thread):
     def __init__(self, info):
         Thread.__init__(self)
@@ -50,7 +49,7 @@ def situacao(self,strinfodata):
         th.start()
 
 class LidarcomCliente( socketserver.BaseRequestHandler ):                                                # Classe para lidar com a conexao dos clientes
-    #print(host)
+
     def handle(self):
         while True:                                                                                       # Laço de execução do Servidor
             infodata = self.request.recv(1024)                                                            # informação que recebeu do cliente
