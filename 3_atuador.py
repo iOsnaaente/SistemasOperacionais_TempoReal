@@ -13,7 +13,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.114.157.253'      
+HOST    = '25.59.115.113'      
 PORT    = 1234
 
 # 'A' de atuador 
@@ -70,13 +70,9 @@ def write_serial(time_to_read = 1/2):
 
     while var_global_control:
         if var_available:
-
-            if type(serial_msg) is not None: 
-                if type(serial_msg) is not bytes: 
-                    serial_msg.encode()
-                     
-                comport.serial_send( serial_msg )
-                var_available = False 
+            #comport.serial_send( serial_msg )
+            print(serial_msg)
+            var_available = False 
     
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
