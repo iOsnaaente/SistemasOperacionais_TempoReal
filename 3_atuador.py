@@ -36,7 +36,7 @@ while not cliente.isAlive:
 
 # INSTANCIAMENTO DA CLASSE SERIAL READER 
 print("Iniciando a conexão Serial na comport %s ..." %( COMPORT if COMPORT else 'default') )
-comport = Serial_SR(COMPORT)
+comport = Serial_SR(COMPORT,timeout=1/10)
 
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão....")
@@ -46,8 +46,9 @@ input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão..
 
 
 serial_msg         = b'0'       # Variavel global
-var_available      = True    # Mutex improvisado
+var_available      = False    # Mutex improvisado
 var_global_control = True    # Avisa o fim do código
+LIST = []
 
 def receive_from_server(time_wait = 1/2):
     global var_global_control
@@ -66,14 +67,16 @@ def receive_from_server(time_wait = 1/2):
         try:
 
             serial_msg = serial_msg[0]
+            print(int.from_bytes(serial_msg,byteorder='little'))
+            LIST.append(serial_msg)
             #print(serial_msg, type(serial_msg))
             #serial_msg = int.from_bytes(serial_msg, byteorder='little')
-            var_available = True 
+            var_available = True
         
         except:
             var_available = False
             print("sem dados")
-            time.sleep(1/5)
+        time.sleep(1/4)
 
         
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
@@ -85,18 +88,18 @@ def write_serial(time_to_read = 1/2):
 
     while var_global_control:
         if var_available:
-            #print(serial_msg, type(serial_msg))
-            #serial_msg = int.to_bytes(serial_msg, 4, byteorder='little')
-            print(serial_msg)
-            serial_msg = serial_msg + b'\n'
-            print("serial2", serial_msg)
-            # Envia a mensagem 
-            comport.serial_send( serial_msg )
-            # Recebo uma resposta 
-            recebido = comport.serial_receive()
+            while LIST:
 
-            print("Enviando para o Arduino : ", serial_msg )
-            print("Recebendo do arduino : ", recebido )
+                #serial_msg = int.to_bytes(serial_msg, 4, byteorder='little')
+                print(LIST)
+                serial_msg2 = LIST.pop(0) + b'\n'
+                # Envia a mensagem
+                comport.serial_send( serial_msg2 )
+                # Recebo uma resposta
+                recebido = comport.serial_receive()
+
+                print("Enviando para o Arduino : ", serial_msg2 )
+                print("Recebendo do arduino : ", recebido )
 
             var_available = False 
 
