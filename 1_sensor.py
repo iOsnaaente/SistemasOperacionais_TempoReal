@@ -13,7 +13,11 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
+<<<<<<< HEAD
 HOST    = '25.59.115.113' 
+=======
+HOST    = "25.94.9.254"
+>>>>>>> 7937d5f4ff7608539c0bf8ddac1c1c28a1083234
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms

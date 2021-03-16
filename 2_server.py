@@ -34,7 +34,7 @@ class Thsensor(Thread):
         self.info = info
 
     def run(self):
-        if len(LIST) is 10: 
+        if len(LIST) == 10: 
             LIST.pop(0)
         LIST.append( self.info )
         

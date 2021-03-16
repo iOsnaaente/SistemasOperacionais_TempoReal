@@ -49,13 +49,14 @@ serial_msg         = b'0'    # Variavel global
 var_available      = True    # Mutex improvisado
 var_global_control = True    # Avisa o fim do código
 
+LIST = [] 
+
 def receive_from_server(time_wait = 1/2):
     global var_global_control
     global var_available
     global serial_msg
 
     while var_global_control:
-        #time.sleep(time_to_send)
         cliente.send_message( NAME )                           # Envia 'A'
         serial_msg = cliente.receive_message( False )           # Recebe a resposta
         # Recebe uma tupla 
@@ -63,10 +64,12 @@ def receive_from_server(time_wait = 1/2):
         # 0 é os dados e 1 é a conexão 
         try:
             serial_msg = serial_msg[0] 
+            LIST.append( serial_msg )
             var_available = True 
         except: 
             print("sem dados")
-            time.sleep(1/5)
+        
+        time.sleep(1/5)
 
         
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
@@ -79,13 +82,14 @@ def write_serial(time_to_read = 1/2):
     while var_global_control:
         if var_available:
             # Concatena o b'\n' na mensagem para fim de linha
-            serial_msg = serial_msg + b'\n'
-            # Envia a mensagem 
-            comport.serial_send( serial_msg )
-            # Recebo uma resposta 
-            recebido = comport.serial_receive()
-            print("Enviando para o Arduino : ", serial_msg )
-            print("Recebendo do arduino : ", serial_msg )
+            while LIST: 
+                serial_msg2 = LIST.pop(0) + b'\n'
+                # Envia a mensagem 
+                comport.serial_send( serial_msg )
+                # Recebo uma resposta 
+                recebido = comport.serial_receive()
+                print("Enviando para o Arduino : ", serial_msg )
+                print("Recebendo do arduino : ", serial_msg )
             var_available = False 
 
 
