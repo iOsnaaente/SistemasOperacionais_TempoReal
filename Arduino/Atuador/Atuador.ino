@@ -7,6 +7,7 @@ Servo servo1;
 
 String inputString = "";
 boolean stringComplete = false;
+
 void atuador(float ang);
 
 void setup() {
@@ -19,10 +20,10 @@ void setup() {
 
 void loop() {
 
-  if ( stringComplete ){
-    union{
+  if ( stringComplete ) {
+    union {
       byte bytes[4] = { inputString[0], inputString[1], inputString[2], inputString[3] };
-      float VALUE;
+      int32_t VALUE;
     } f;
 
     inputString = "";
@@ -30,21 +31,22 @@ void loop() {
 
     atuador( f.VALUE );
   }
-
 }
 
-void atuador(float ang){
-  byte angle = map(ang, 0, 100, 0, 179);
-  servo1.write( angle );
+void atuador(int32_t ang) {
+  //byte angle = map( ang, 0, 100, 0, 179 );
+  digitalWrite(13, HIGH);
+  servo1.write( ang );
+  Serial.println(ang);
+  digitalWrite(13, LOW); 
 }
 
-
-void serialEvent(){
-  while(Serial.available()){
+void serialEvent() {
+  while (Serial.available()) {
     char inChar = (char)Serial.read();
     inputString += inChar;
-    if (inChar == '\n'){
-      stringComplete = true;    
+    if (inChar == '\n') {
+      stringComplete = true;
     }
-  } 
+  }
 }
