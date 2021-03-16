@@ -59,8 +59,8 @@ def read_serial( time_to_read = 1 ):
 
     while var_global_control: 
         #time.sleep( time_to_read )
-        lines = comport.serial_receive()     
-        for line in  lines:           
+        lines = comport.serial_receive()
+        for line in  lines:   
             data = str( line.decode() ).split(' ')[:-1]
             data = [ int(n) for n in data ]
             to_send = NAME + bytes(data) 

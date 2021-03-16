@@ -12,6 +12,8 @@ host = '25.59.115.113'  #http://25.94.218.230:555
 port = 1234
 LIST = []
 
+aux = 0 
+
 class Thatuador(Thread):
     def __init__(self, info):
         Thread.__init__(self)
@@ -24,7 +26,7 @@ class Thatuador(Thread):
             self.info.request.send( enviando )
         else:
             #print("nao entrou")
-            msg = "sem dados"
+            msg = ""
             self.info.request.send( msg.encode() )
 
 class Thsensor(Thread):
@@ -33,21 +35,32 @@ class Thsensor(Thread):
         self.info = info
 
     def run(self):
+        if len(LIST) is 10: 
+            LIST.pop(0)
         LIST.append( self.info )
-        #print(LIST[-1])
+        
 
 def agora():
     return time.ctime( time.time() )
 
 
 def situacao(self, strinfodata):
-    str_val = strinfodata[:1].decode().upper()
-    int_val = int.from_bytes(strinfodata[1:], byteorder='little')
+    global aux 
 
-    # PUXANDO A RAIZ DO NUMERO 
-    int_val = round( sqrt( int_val ) ) 
-    int_val = int.to_bytes(int_val, 4, byteorder='little')
+    str_val = strinfodata[:1].decode().upper()
     
+    int_val = int.from_bytes(strinfodata[1:], byteorder='little')
+    print(int_val)
+    
+    # PUXANDO A RAIZ DO NUMERO 
+    int_val = round( )
+    int_val = int( sqrt( int_val ) ) 
+    try: 
+        int_val = int.to_bytes(int_val, 4, byteorder='little')
+        aux = int_val 
+    except:
+        int_val = aux 
+
     if str_val == "A":
         print("Chamando TH_Atuador", int_val )
         atuador = self
