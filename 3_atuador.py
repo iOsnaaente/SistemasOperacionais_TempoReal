@@ -12,7 +12,7 @@ import sys
 import os 
 
 # MACRO-DEFINIÇÕES 
-COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
+COMPORT = 'COM4'                                # Poderia ser pego como argumento args[1]
 HOST    = '25.114.157.253'      
 PORT    = 1234
 
