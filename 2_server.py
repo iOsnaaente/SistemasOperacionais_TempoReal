@@ -4,11 +4,10 @@ from socket import *
 
 import socketserver, time
 import threading
-import Threads2
 
 from math import sqrt
 
-host = '25.59.115.113'  #http://25.94.218.230:555
+host = '25.59.115.113' 
 port = 1234
 LIST = []
 
@@ -52,8 +51,7 @@ def situacao(self, strinfodata):
     int_val = int.from_bytes(strinfodata[1:], byteorder='little')
     print(int_val)
     
-    # PUXANDO A RAIZ DO NUMERO 
-    int_val = round( )
+    # PUXANDO A RAIZ DO NUMERO
     int_val = int( sqrt( int_val ) ) 
     try: 
         int_val = int.to_bytes(int_val, 4, byteorder='little')

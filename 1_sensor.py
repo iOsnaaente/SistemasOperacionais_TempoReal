@@ -13,7 +13,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.114.157.253'
+HOST    = '25.59.115.113' 
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
@@ -51,22 +51,29 @@ var_global_control = True    # Avisa o fim do código
 msg_ready          = False   # Mutex improvisado 
 to_send            = 0       # Variavel global dos dados 
 
+
+valor = 0 
+
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
     global var_global_control
     global msg_ready 
     global to_send 
+    global valor 
 
     while var_global_control: 
-        #time.sleep( time_to_read )
-        lines = comport.serial_receive()
+        time.sleep( time_to_read )
+        
+        """lines = comport.serial_receive()
         for line in  lines:   
             data = str( line.decode() ).split(' ')[:-1]
             data = [ int(n) for n in data ]
             to_send = NAME + bytes(data) 
             print('Dados prontos para enviar : ', to_send )
             msg_ready = True 
-
+        """
+        to_send = NAME + bytes(valor**2)
+        valor += 5 
 
 def send_to_server( time_to_send = 1/2 ):
     global var_global_control

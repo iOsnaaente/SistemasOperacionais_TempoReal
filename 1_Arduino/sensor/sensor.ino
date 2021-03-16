@@ -34,7 +34,9 @@ void loop() {
 
 }
 
+int32_t val = 0; 
+
 int32_t read_sensor(){
   //return (int32_t)random(0, 180 );
-  return (int32_t) 40;
+  return (int32_t) val < 180 ? val=val+5 : val = 0  ;
 }
