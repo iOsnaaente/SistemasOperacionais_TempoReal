@@ -13,7 +13,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM4'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.114.157.253'      
+HOST    = '25.59.115.113'
 PORT    = 1234
 
 # 'A' de atuador 
@@ -45,7 +45,7 @@ input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão..
 
 
 
-serial_msg         = 0       # Variavel global
+serial_msg         = b'0'       # Variavel global
 var_available      = True    # Mutex improvisado
 var_global_control = True    # Avisa o fim do código
 
@@ -64,11 +64,14 @@ def receive_from_server(time_wait = 1/2):
         # 0 é os dados e 1 é a conexão 
         
         try:
+
             serial_msg = serial_msg[0]
-            serial_msg = int.from_bytes(serial_msg, byteorder='little')
+            #print(serial_msg, type(serial_msg))
+            #serial_msg = int.from_bytes(serial_msg, byteorder='little')
             var_available = True 
         
-        except: 
+        except:
+            var_available = False
             print("sem dados")
             time.sleep(1/5)
 
@@ -82,15 +85,18 @@ def write_serial(time_to_read = 1/2):
 
     while var_global_control:
         if var_available:
-            serial_msg = int.to_bytes(serial_msg, 4, byteorder='little')
+            #print(serial_msg, type(serial_msg))
+            #serial_msg = int.to_bytes(serial_msg, 4, byteorder='little')
+            print(serial_msg)
             serial_msg = serial_msg + b'\n'
+            print("serial2", serial_msg)
             # Envia a mensagem 
-            #comport.serial_send( serial_msg )
+            comport.serial_send( serial_msg )
             # Recebo uma resposta 
-            #recebido = comport.serial_receive()
+            recebido = comport.serial_receive()
 
             print("Enviando para o Arduino : ", serial_msg )
-            print("Recebendo do arduino : ", serial_msg )
+            print("Recebendo do arduino : ", recebido )
 
             var_available = False 
 
