@@ -13,15 +13,16 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.114.157.253'
-PORT    = 1234
+HOST    = 'localhost'
+PORT    = 1205
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
 NAME    = b'S'                                  # Nome do serviço 
 
+
 # INSTANCIAMENTO DA CLASSE CLIENTE 
 print("Iniciando a conexão cliente/servidor...")
-cliente = Client_TCP( HOST, PORT, timeout = 1/10 )
+cliente = Client_TCP( HOST, PORT, timeout = 1 )
 
 # SE O CLIENTE NÃO ESTIVER CONECTADO, TENTE CONECTAR ATÉ CONSEGUIR
 tries = 0  
@@ -44,58 +45,34 @@ comport = Serial_SR( COMPORT )
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 print("Conexões Serial estabelecida....")
 input("Pressione ENTER para iniciar a transmissão....")
-#os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do prompt
+os.system( 'clear' if os.name == 'nt' else 'cls' )       # Limpa a tela do prompt
 
 
 var_global_control = True    # Avisa o fim do código 
-msg_ready          = False   # Mutex improvisado 
 to_send            = 0       # Variavel global dos dados 
 
-
-valor = 0 
-
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
-def read_serial( time_to_read = 1/10 ):
+def read_serial( time_to_read = 1 ):
     global var_global_control
-    global msg_ready 
     global to_send 
-    global valor 
 
     while var_global_control: 
         time.sleep( time_to_read )
-        
-        """lines = comport.serial_receive()
-        for line in  lines:   
-            data = str( line.decode() ).split(' ')[:-1]
-            data = [ int(n) for n in data ]
-            to_send = NAME + bytes(data) 
-            print('Dados prontos para enviar : ', to_send )
-            msg_ready = True 
-        """
-
-        if valor + 5 < 180:
-            to_send = NAME + bytes(int.to_bytes(valor ** 2,4,byteorder='little'))
-            valor = valor + 5
-            msg_ready = True
-        else:
-            valor = 0
+        lines = comport.serial_receive()     
+        for line in  lines:           
+            data = line.decode()
+            data = data.replace('\n', '').replace('\r','')
+            to_send = pack('cf', NAME, data )
 
 
 def send_to_server( time_to_send = 1/2 ):
     global var_global_control
-    global msg_ready
     global to_send
 
     while var_global_control: 
-        #time.sleep( time_to_send )
-        if msg_ready:
-            cliente.send_message( to_send )
-            print('Enviando : ', to_send )
-            msg_ready = False 
+        time.sleep( time_to_send )
+        cliente.send_message( to_send )
 
-
-# LIMPA O BUFFER DA SERIAL 
-#comport.serial_clear_input()
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_reader = Thread( target = read_serial, args = ( 1/2 , ), name = "Serial_Reader"  )
@@ -104,7 +81,6 @@ func_sender = Thread( target = send_to_server, args = ( 1/2 , ), name = "TCP_sen
 # INICIA AS THREADS FUNCTIONS 
 func_reader.start()
 func_sender.start()
-
 
 time.sleep(3600000) # 60 minutos e encerra o programa 
 var_global_control = False

@@ -55,8 +55,7 @@ class Client_TCP:
     """ Método para receber uma mensagem.
         Lembrar do timeout (segundos).
     """
-    def receive_message(self, show_msg):
-
+    def receive_message(self, show_msg ):
         try:
             msg = self.tcp.recvfrom( self.BUFF ) 
             if show_msg:
@@ -72,7 +71,7 @@ class Client_TCP:
     """ setar o tamanho máximo do buffer.
     """
     def set_buffer(self, buff):
-        self.BUFF = buff
+        self.BUFF = buff 
 
     """
         Setar o timeout da conexão.

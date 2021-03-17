@@ -37,7 +37,7 @@ while not cliente.isAlive:
 
 # INSTANCIAMENTO DA CLASSE SERIAL READER 
 print("Iniciando a conexão Serial na comport %s ..." %( COMPORT if COMPORT else 'default') )
-comport = Serial_SR(COMPORT, timeout=1/10)
+comport = Serial_SR(COMPORT)
 
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão....")
@@ -46,7 +46,7 @@ input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão..
 
 
 serial_msg         = b'0'    # Variavel global
-var_available      = True    # Mutex improvisado
+var_available      = False   # Mutex improvisado
 var_global_control = True    # Avisa o fim do código
 
 LIST = [] 
@@ -73,7 +73,7 @@ def receive_from_server(time_wait = 1/10):
 
         
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
-def write_serial(time_to_read = 1/10):
+def write_serial(time_to_read = 1/2):
     
     global var_global_control
     global var_available
@@ -94,8 +94,8 @@ def write_serial(time_to_read = 1/10):
 
 
 # Limpa o buffer para enviar os dado para a serial    
-comport.serial_clear_input()  
-comport.serial_clear_output() 
+#comport.serial_clear_input()  
+#comport.serial_clear_output() 
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_writer   = Thread(target = receive_from_server, args = ( 1/10 , ), name = "TCP_Reader")
