@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 #define BUFFER_LEN 32
-#define pinServo 8
+#define pinServo 3
 
 Servo servo1;
 
@@ -14,6 +14,10 @@ void setup() {
 
   servo1.attach( pinServo );
   Serial.begin( 9600 );
+  
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH); 
+  
   inputString.reserve( BUFFER_LEN );
 
 }
@@ -36,7 +40,7 @@ void loop() {
 void atuador(int32_t ang) {
   //byte angle = map( ang, 0, 100, 0, 179 );
   digitalWrite(13, HIGH);
-  servo1.write( ang );
+  servo1.write( (int)ang );
   Serial.println(ang);
   digitalWrite(13, LOW); 
 }

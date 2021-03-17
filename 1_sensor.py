@@ -13,7 +13,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.59.115.113' 
+HOST    = '25.114.157.253'
 PORT    = 1234
 
 PERIOD  = 500                                   # Periodo do ciclo em ms
@@ -55,7 +55,7 @@ to_send            = 0       # Variavel global dos dados
 valor = 0 
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
-def read_serial( time_to_read = 1 ):
+def read_serial( time_to_read = 1/2 ):
     global var_global_control
     global msg_ready 
     global to_send 
@@ -72,8 +72,9 @@ def read_serial( time_to_read = 1 ):
             print('Dados prontos para enviar : ', to_send )
             msg_ready = True 
         """
-        to_send = NAME + bytes(valor**2)
-        valor = valor + 5 if valor + 5 < 180 else 0 
+        to_send = NAME + int.to_bytes(valor**2, 4, byteorder='little')
+        valor = valor + 5 if valor + 5 < 180 else 0
+        msg_ready = True 
 
 def send_to_server( time_to_send = 1/2 ):
     global var_global_control
@@ -89,7 +90,7 @@ def send_to_server( time_to_send = 1/2 ):
 
 
 # LIMPA O BUFFER DA SERIAL 
-comport.serial_clear_input()
+#comport.serial_clear_input()
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
 func_reader = Thread( target = read_serial, args = ( 1/2 , ), name = "Serial_Reader"  )

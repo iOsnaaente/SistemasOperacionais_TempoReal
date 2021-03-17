@@ -14,7 +14,7 @@ import os
 
 # MACRO-DEFINIÇÕES 
 COMPORT = 'COM3'                                # Poderia ser pego como argumento args[1]
-HOST    = '25.59.115.113'      
+HOST    = '25.114.157.253'      
 PORT    = 1234
 
 # 'A' de atuador 
@@ -37,7 +37,7 @@ while not cliente.isAlive:
 
 # INSTANCIAMENTO DA CLASSE SERIAL READER 
 print("Iniciando a conexão Serial na comport %s ..." %( COMPORT if COMPORT else 'default') )
-comport = Serial_SR(COMPORT)
+comport = Serial_SR(COMPORT, timeout=1/10)
 
 # CONEXÕES EFETUADAS COM SUCESSO, SEGUIMOS PARA O CÓDIGO
 input("Conexões estabelecidas.... Pressione ENTER para iniciar a transmissão....")
@@ -51,7 +51,7 @@ var_global_control = True    # Avisa o fim do código
 
 LIST = [] 
 
-def receive_from_server(time_wait = 1/2):
+def receive_from_server(time_wait = 1/10):
     global var_global_control
     global var_available
     global serial_msg
@@ -73,7 +73,7 @@ def receive_from_server(time_wait = 1/2):
 
         
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
-def write_serial(time_to_read = 1/2):
+def write_serial(time_to_read = 1/10):
     
     global var_global_control
     global var_available
@@ -98,8 +98,8 @@ comport.serial_clear_input()
 comport.serial_clear_output() 
 
 # INSTANCIA AS THREADS PASSANDO A FUNÇÃO, PARAMETROS E NOME (IDs)
-func_writer   = Thread(target = receive_from_server, args = ( 1/2 , ), name = "TCP_Reader")
-func_receiver = Thread(target = write_serial, args = ( 1/2 , ), name = "Serial_Writer")
+func_writer   = Thread(target = receive_from_server, args = ( 1/10 , ), name = "TCP_Reader")
+func_receiver = Thread(target = write_serial, args = ( 1/10 , ), name = "Serial_Writer")
 
 # INICIA AS THREADS FUNCTIONS 
 func_receiver.start()
