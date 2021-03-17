@@ -56,7 +56,6 @@ valor = 0
 
 # FUNÇÕES DE THREADS PARA LER SERIAL PERIODICO E ENVIAR DADOS
 def read_serial( time_to_read = 1 ):
-    
     global var_global_control
     global msg_ready 
     global to_send 
@@ -64,14 +63,6 @@ def read_serial( time_to_read = 1 ):
 
     while var_global_control: 
         time.sleep( time_to_read )
-<<<<<<< HEAD
-        lines = comport.serial_receive()     
-        for line in  lines:
-            data = line.decode()
-            data = data.replace('\n', '').replace('\r','')
-            to_send = pack('cf', NAME, data )
-
-=======
         
         """lines = comport.serial_receive()
         for line in  lines:   
@@ -83,10 +74,8 @@ def read_serial( time_to_read = 1 ):
         """
         to_send = NAME + bytes(valor**2)
         valor = valor + 5 if valor + 5 < 180 else 0 
->>>>>>> 29cb73ff071262582378fbc58eeac07eb75055e4
 
 def send_to_server( time_to_send = 1/2 ):
-    
     global var_global_control
     global msg_ready
     global to_send

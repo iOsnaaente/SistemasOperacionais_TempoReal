@@ -55,7 +55,11 @@ class Client_TCP:
     """ Método para receber uma mensagem.
         Lembrar do timeout (segundos).
     """
+<<<<<<< HEAD
     def receive_message(self, show_msg):
+=======
+    def receive_message(self, show_msg = False ):
+>>>>>>> 29cb73ff071262582378fbc58eeac07eb75055e4
         try:
             msg = self.tcp.recvfrom( self.BUFF ) 
             if show_msg:

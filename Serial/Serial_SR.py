@@ -116,7 +116,17 @@ class Serial_SR ( Serial ):
 
         self.comport = Serial( DEVICE, BAUDRATE, timeout = TIMEOUT)
     
-    
+
+    """ Limpa o buffer do input da serial 
+    """
+    def serial_clear_input(self):
+        self.comport.flushInput()
+
+    """ Limpa o buffer do output da serial 
+    """
+    def serial_clear_output(self):
+        self.comport.flushOutput()
+
     """ Retorna a leitura da porta serial
     """
     def serial_receive(self, num_lines = 1 ):
